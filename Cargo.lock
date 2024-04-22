@@ -1236,6 +1236,7 @@ dependencies = [
  "clap",
  "futures",
  "image",
+ "rand",
  "reqwest",
  "tokio",
 ]
