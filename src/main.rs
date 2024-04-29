@@ -25,11 +25,25 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
 
     println!("Download {:?} images, width: {:?}, height: {:?}", args.count, args.width, args.height);
-    let mut downloader = vec![download_image(&args).boxed()];
-    for _ in 0..&args.count - 1 {
-        downloader.push(download_image(&args).boxed());
+
+    let mut start = 0;
+    let mut end = 100;
+    loop {
+         if end > args.count {
+            end = args.count;
+        }
+        let mut downloader = vec![download_image(&args).boxed()];
+        for _ in start..end {
+            downloader.push(download_image(&args).boxed());
+        }
+        let _ = future::join_all(downloader).await;
+        start = end;
+        if end == args.count {
+            break;
+        }
+        end += 100;
     }
-    let _ = future::join_all(downloader).await;
+    
     Ok(())
 }
 
